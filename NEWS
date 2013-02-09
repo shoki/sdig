@@ -1,0 +1,20 @@
+Release notes for 0.40
+
+The build system now uses autoconf, so you can do the usual tricks with 
+--prefix and --sysconfdir to customize your build.  Be aware that the 
+default configuration will look for sdig.conf in /usr/local/etc, while 
+previous versions assumed /etc.
+
+DESTDIR is now supported for packaging purposes.
+
+SNMPv2-MIB::sysName.0 is now printed when available for switches.
+
+nbname has been dropped.  If you still need additional NetBIOS type data, 
+write a script to call Samba's nmblookup, then set it as your HOSTINFO 
+command.
+
+UCD-SNMP support is essentially gone.  You can probably still make it work 
+if you're determined to use the old libraries, but it will require 
+renaming a bunch of includes and variable types.
+
+The -m switch to search by MAC addresses works again.

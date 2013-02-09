@@ -1,0 +1,225 @@
+0.43:
+
+Mon Apr 11 02:10:09 PDT 2005 / Russell Jackson <raj@csub.edu>
+
+ * Fix build on solaris
+
+0.42:
+
+Thr Nov 25 14:06:42 PST 2004 / Russell Jackson <raj@cserv62.csub.edu>
+
+ * Make mactable part of distribution
+
+0.41:
+
+Sat Nov 20 15:16:26 PST 2004 / Russell Jackson <raj@cserv62.csub.edu>
+
+ * Update Makefile.in to compile on FreeBSD
+ * Change output to include ifAlias and ifName
+
+0.40:
+
+Fri Apr  4 08:56:07 MST 2003 / Russell Kroll <rkroll@exploits.org>
+
+ * Final documentation tweaks for release
+
+Mon Mar 24 14:27:09 MST 2003 / Russell Kroll <rkroll@exploits.org>
+
+ - swc: removed.  It wasn't being maintained, anyway.
+
+Mon Mar 24 14:06:11 MST 2003 / Russell Kroll <rkroll@exploits.org>
+
+ - Makefile: DESTDIR is now supported for packaging.  All files are
+   now installed with the local install command, and respect the usual
+   autoconf things like prefix.  The man pages are now installed.
+
+   Note: since the prefix is now /usr/local, your configuration path
+   will be /usr/local/etc by default.  If this isn't what you want,
+   use configure --sysconfpath to change it back to /etc.
+
+ * autoconf added - configure is now used to prep the tree for builds.
+
+ - sdig: reworked debug levels, cleaned up const usage
+
+ - sdig: added checks for malloc/strdup calls
+
+Tue Feb 18 15:31:39 MST 2003 / Russell Kroll <rkroll@exploits.org>
+
+ - sdig: added a check for SNMPv2-MIB::sysName.0 when printing
+   Switch: details.  If this is found, it will be included on that
+   line.  Consider this an incentive to set good data in your equipment.
+
+Thu Dec  5 13:48:35 MST 2002 / Russell Kroll <rkroll@exploits.org>
+
+ - sdig: added HOSTINFO support to allow extra details to be printed 
+   about a host before the router check starts.
+
+Thu Dec  5 13:29:46 MST 2002 / Russell Kroll <rkroll@exploits.org>
+
+ - nbname: dropped.  It's beyond the scope of this project.
+   Use nmblookup -A <host> to find what you need.
+
+   Support for printing the host's NetBIOS name (or anything else)
+   will be handled by the upcoming HOSTINFO directive.
+
+Thu Dec  5 13:26:01 MST 2002 / Russell Kroll <rkroll@exploits.org>
+
+ - snmpget, sdig: reworked to make Net-SNMP happy.
+
+Wed Dec  4 18:12:14 MST 2002 / Russell Kroll <rkroll@exploits.org>
+
+ * The Makefile now looks for net-snmp-config, so UCD-SNMP support is
+   effectively retired at this point. 
+
+Mon Aug 12 16:54:04 MDT 2002 / Russell Kroll <rkroll@exploits.org>
+
+ - sdig: fixed the -m search-by-MAC mode.  It was still trying to use
+   the human-readable long format while the internals were changed to
+   a packed binary format.
+
+0.30:
+
+Mon Jul 22 20:21:36 MDT 2002 / Russell Kroll <rkroll@exploits.org>
+
+ - nbname: moved the resolve() call down after where root powers are
+   dropped just in case someone manages to overflow the resolver
+
+Mon Jul 22 20:19:25 MDT 2002 / Russell Kroll <rkroll@exploits.org>
+
+ - sdig: rewrote a lot of the guts again.  There's now an internal
+   snmpget function, and the external snmpget binary is no longer needed.
+
+   The old 3com-specific hack of "unit x, port y" is now gone since
+   sdig now fetches the port description from the switch itself.
+   This is usually a lot more informative anyway.
+
+0.20:
+
+Wed Apr  3 23:09:55 MST 2002 / Russell Kroll <rkroll@exploits.org>
+
+ * Final cleanups for release.  It's time to push this one out and
+   get working on cleaning up some of the cruft.  It's apparent that
+   other people are actually using this now, so things need to be
+   improved. 
+
+Sun Jan  6 06:10:17 MST 2002 / Russell Kroll <rkroll@exploits.org>
+
+ - sdig.8, sdig.conf.5: man pages created.
+
+Thu Nov 22 07:07:51 MST 2001 / Russell Kroll <rkroll@exploits.org>
+
+ - sdig: the debug code now has multiple levels so using -d once 
+   doesn't give you all the really messy unimportant stuff.  To see
+   that, use several - the really ugly ones are hiding down at 5 and 6.
+
+ - sdig: massive overhaul - the tangle of code in main is gone.  There
+   are now a bunch of functions that have obvious names so the flow is
+   easier to follow.
+
+ - sdig: PORTINFO switched to PORTDESC throughout, as it should be.
+   Reported by Ernie Oporto.
+
+0.11:
+
+Fri May 18 13:03:42 MDT 2001 / Russell Kroll <rkroll@exploits.org>
+
+ - sdig: updated code/docs to reflect WINS is now optional
+
+Fri May 18 12:57:23 MDT 2001 / Russell Kroll <rkroll@exploits.org>
+
+ - swc: root privileges are dropped after the bind to a low port is done
+
+Fri May 18 12:50:09 MDT 2001 / Russell Kroll <rkroll@exploits.org>
+
+ - swc: fixed to work with Net-SNMP tools
+
+Fri May 18 12:42:08 MDT 2001 / Russell Kroll <rkroll@exploits.org>
+
+ - sdig: cleaned up the switch probe loop logic and output routines
+
+Fri May 18 12:31:30 MDT 2001 / Russell Kroll <rkroll@exploits.org>
+
+ - sdig: "<MAC> not found on switch <IP>" is now suppressed unless you
+   run in verbose mode.
+
+Fri May 18 12:26:25 MDT 2001 / Russell Kroll <rkroll@exploits.org>
+
+ - sdig: help text and mac example updates
+
+Fri May 18 11:24:49 MDT 2001 / Russell Kroll <rkroll@exploits.org>
+
+ - sdig: in-addr reverse resolution is now performed when available.
+
+ * Trivia note: DNS came around rather late since this program was
+   originally written to track down Windoze boxes, and they were all
+   in WINS.  It seems strange for a Unix program to do WINS first and
+   DNS second, but you scratch the itch before going for completeness.
+
+Fri May 18 10:51:32 MDT 2001 / Russell Kroll <rkroll@exploits.org>
+
+ - sdig: here's how DNS and WINS and direct port 137 queries work:
+
+   - Hostname given: try DNS, then WINS, to get an IP address
+   - IP address given: no forward resolution necessary (obviously)
+
+   Regardless, attempt a NBNAME query if configured.
+
+Thu May 17 12:21:13 CDT 2001 / Russell Kroll <rkroll@exploits.org>
+
+ - sdig: DNS lookups are now supported.  WINS is still used if DNS fails.
+
+Thu May 17 11:58:42 CDT 2001 / Russell Kroll <rkroll@exploits.org>
+
+ - swc: dumped the SNMPGET/SNMPSET #defines for now, and just rely on
+   them being in the path.  A config file is just too much bulk for this
+   program, which is supposed to be lightweight.
+
+ - swc/sdig: moved line parsing code out into common
+
+Thu May 17 09:57:51 MDT 2001 / Russell Kroll <rkroll@exploits.org>
+
+ - swc: new helper program.  This was a separate project so it's not
+   really integrated yet.  You can use it to turn ports on and off 
+   without going through the complicated telnet or http interfaces.
+   I use it locally with cron to enable and disable ports that are out
+   in areas of schools that aren't supervised after hours.
+
+Wed May 16 18:22:52 MDT 2001 / Russell Kroll <rkroll@exploits.org>
+
+ - Everything should now work with Net-SNMP, at the expense of not
+   working with the older CMU SNMP snmpget.  You'll need to upgrade to
+   Net-SNMP if you were previously using the CMU version.
+
+Wed May 16 18:02:59 MDT 2001 / Russell Kroll <rkroll@exploits.org>
+
+ - sdig: started switching the code over to the Net-SNMP snmpget format
+   which doesn't say things like "Hex:" and "OCTET STRING:".
+
+Wed May 16 17:14:11 MDT 2001 / Russell Kroll <rkroll@exploits.org>
+
+ - sdig: pow() is no longer used, so math.h and -lm are gone.
+
+ - The MAC table's location is now configured with MACTABLE <path>
+   in the sdig.conf.  If you're upgrading from 0.10, be sure to
+   add this to your file.
+
+Wed May 16 16:58:59 MDT 2001 / Russell Kroll <rkroll@exploits.org>
+
+ - This file is now called CHANGES.
+
+ - The MAC table is no longer provided in the package since it's bulky
+   and redundant for existing users.  It's available on the main web 
+   site - http://www.exploits.org/sdig/
+
+ - sdig now supports -d to switch on debug mode.  This currently exposes
+   the popen activities, with more in the future planned.
+
+0.10 - 4 August 2000
+
+ - Initial release just to get it out there.  This program has been
+   used where I work for almost a year now.  In the past week it has
+   been cleaned up a great deal in order to remove most of the hardcoded
+   items that would be a major annoyance to other users.
+
+   There's no telling where this program may go, but it should be
+   interesting.

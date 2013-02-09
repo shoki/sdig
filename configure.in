@@ -1,0 +1,54 @@
+dnl Switch Digger: configure.in
+
+AC_INIT(sdig.c)
+AC_CONFIG_HEADER(include/config.h)
+AC_PREFIX_DEFAULT(/usr/local)
+
+dnl Fix this early so we can expand with eval later
+test "$prefix" = NONE && prefix=/usr/local
+
+AC_CANONICAL_SYSTEM
+
+AC_PROG_CC
+AC_PROG_CPP
+AC_PROG_INSTALL
+
+AC_MSG_CHECKING(for Net-SNMP cflags)
+NETSNMP_CFLAGS=`net-snmp-config --cflags`
+
+if (test "$?" != "0")
+then
+	AC_MSG_RESULT(not found)
+	AC_MSG_ERROR(Net-SNMP not found)
+else
+	AC_MSG_RESULT($NETSNMP_CFLAGS)
+fi
+
+AC_MSG_CHECKING(for Net-SNMP libs)
+NETSNMP_LIBS=`net-snmp-config --libs`
+
+if (test "$?" != "0")
+then
+	AC_MSG_RESULT(not found)
+	AC_MSG_ERROR(Net-SNMP not found)
+else
+	AC_MSG_RESULT($NETSNMP_LIBS)
+fi
+
+AC_CHECK_FUNC(inet_aton)
+AC_CHECK_FUNC(inet_pton, AC_DEFINE(HAVE_INET_PTON),
+	AC_CHECK_LIB(nsl, inet_pton, AC_DEFINE(HAVE_INET_PTON)
+	LIBS="${LIBS} -lnsl"))
+
+AC_SUBST(HAVE_INET_PTON)
+AC_SUBST(HAVE_INET_ATON)
+
+# expand $sysconfdir and write it out
+eval conftemp=${sysconfdir}
+AC_DEFINE_UNQUOTED(CONFPATH, "$conftemp",
+                        [Default path for configuration files])
+
+AC_SUBST(NETSNMP_CFLAGS)
+AC_SUBST(NETSNMP_LIBS)
+
+AC_OUTPUT(Makefile)

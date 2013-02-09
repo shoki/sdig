@@ -1,0 +1,39 @@
+kwick-sdig (0.44.1-1) lenny; urgency=low
+
+  * added spport for ipNetToPhysicalTable for IP to MAC lookup
+
+ -- Andrei Pascha <apa@dev1.nbg1.kwick.de>  Sat, 01 Oct 2011 10:47:27 +0200
+
+kwick-sdig (0.43.12-5) lenny; urgency=low
+
+  * Non-maintainer upload.
+  * added support for force10 switches which use another mib than the default
+    mib
+
+ -- Andrei Pascha <apa@dev1.nbg1.kwick.de>  Tue, 26 Oct 2010 14:02:16 +0200
+
+kwick-sdig (0.43.12-4) unstable; urgency=low
+
+  * Install config files to /etc/sdig
+
+ -- root <root@store1.nasebohren.local>  Tue, 06 Apr 2010 17:42:54 +0200
+
+kwick-sdig (0.43.12-3) unstable; urgency=low
+
+  * Another fix for setting config directory to /etc/kwick-sdig
+
+ -- root <root@store1.nasebohren.local>  Tue, 06 Apr 2010 16:47:16 +0200
+
+kwick-sdig (0.43.12-2) unstable; urgency=low
+
+  * Config directory set to /etc
+  * 
+
+ -- root <root@store1.nasebohren.local>  Tue, 06 Apr 2010 16:39:20 +0200
+
+kwick-sdig (0.43.12-1) unstable; urgency=low
+
+  * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
+
+ -- root <steffen.zieger@kwick.de>  Tue, 06 Apr 2010 16:33:39 +0200
+

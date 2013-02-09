@@ -1,0 +1,62 @@
+# Switch Digger: Makefile.in
+
+# directories
+prefix		= @prefix@
+exec_prefix	= @exec_prefix@
+
+BINDIR	= $(DESTDIR)@bindir@
+CONFDIR	= $(DESTDIR)@sysconfdir@
+MANDIR	= $(DESTDIR)@mandir@
+
+# other definitions
+CC	= @CC@
+CFLAGS	= -Iinclude -I/usr/local/include 
+
+INSTALLCMD       = @INSTALL@
+INSTALLMODE_BIN	 = 0755
+INSTALLMODE_CONF = 0600
+
+PROGS   = sdig
+
+# change this to whatever it takes to make these things link on your system
+
+NETSNMP_CFLAGS = @NETSNMP_CFLAGS@
+NETSNMP_LIBS   = @NETSNMP_LIBS@
+
+all: $(PROGS)
+
+sdig.o: sdig.c
+	$(CC) $(CFLAGS) $(NETSNMP_CFLAGS) -c sdig.c
+
+sdig: sdig.o common.o snmpget.o 
+	$(CC) $(CFLAGS) -o sdig sdig.o common.o snmpget.o \
+	$(NETSNMP_LIBS)
+
+snmpget.o: snmpget.c
+	$(CC) $(CFLAGS) -c snmpget.c
+
+clean:
+	rm -f $(PROGS) *.o
+
+distclean: clean
+	-cp Makefile.dist Makefile
+	-rm -rf autom4te.cache
+	-rm -f include/config.h include/config.h.in~
+	-rm -f config.status config.cache config.log
+
+install: all install-bin install-conf install-man
+
+install-bin:
+	./install-sh -d $(BINDIR)
+	$(INSTALLCMD) -m $(INSTALLMODE_BIN) sdig $(BINDIR)
+
+install-conf:
+	./install-sh -d $(CONFDIR)
+	$(INSTALLCMD) -m $(INSTALLMODE_CONF) sdig.conf $(CONFDIR)/sdig.conf-sample
+	$(INSTALLCMD) -m $(INSTALLMODE_CONF) mactable $(CONFDIR)/mactable-sample
+
+install-man:
+	./install-sh -d $(MANDIR)/man5
+	./install-sh -d $(MANDIR)/man8
+	$(INSTALLCMD) sdig.conf.5 $(MANDIR)/man5
+	$(INSTALLCMD) sdig.8 $(MANDIR)/man8

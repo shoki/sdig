@@ -1,0 +1,204 @@
+Switch Digger documentation - Russell Kroll <rkroll@exploits.org>
+=================================================================
+
+Released under the GNU GPL - See COPYING for details.
+
+First, see INSTALL for information on how to build and install it.
+
+This document details the configuration file's directives that apply 
+to your network.  It is important to understand how this thing works,
+so we'll cover that first.
+
+Purpose
+=======
+
+This program is designed to track down computers to the finest level of
+information available at the moment.  Sometimes this can mean an exact
+description of a port in a building anywhere in an enterprise.  Other
+times this may just be a vague notion of a distant network.  The results
+are only as good as the data you feed to it.
+
+Requirements
+============
+
+You need at least the following things to do anything useful with this:
+
+ - Routers that keep ARP tables available via SNMP, along with access
+   to said routers.  In other words, if you came here looking for a way
+   to annoy people who don't think you're 31337, keep on moving...
+
+ - Switches that keep maps of MAC addresses to port numbers, again via
+   SNMP.  Hubs usually don't cut it here, since they have no need to 
+   know where a given NIC is.
+
+Design
+======
+
+The Switch Digger relies on the premise that today's routers and switches
+are chock-full of information that very few people use.  It puts that data
+to good use and cross-references what the network knows with what it knows
+to arrive at the closest possible location.
+
+First, it finds the IP address, using DNS (and optionally WINS) queries if 
+necessary.  The list of known networks from the config file is then 
+searched to see if any match the target host.  Assuming a match is found, 
+the router(s) for that network are then queried for the MAC address 
+associated with that IP address.
+
+If the router has that IP address in the ARP cache, it will return the
+last known MAC address of the system.  That is all the router can give us,
+so we leave it alone at that point.  The digger then turns back to the
+local configuration file and searches for switches that are part of that
+network.  It asks each one in turn about their MAC to port tables,
+searching the results for the MAC address from the router.
+
+When a switch indicates a match for the MAC address, the digger then
+checks the list of links for the switch in question.  If a port happens to
+be one that leads to another switch, the result is suppressed unless
+running in verbose mode.  After all, the switch it leads to knows better.
+
+Finally, one of the results will be from a switch port that doesn't lead
+to another switch.  This value is displayed, and the port info is sought,
+again from the config file.  If anything is found, it is displayed.  If
+you have populated that file with good data, it can be exactly what you
+need to track a system down to a real position somewhere.
+
+Setting it up
+=============
+
+First you need to get a list of all the networks that you want to monitor,
+and the addresses of the routers that inhabit them.  You will also need
+the SNMP community strings for read-only access for each.  Many routers
+require you to explicitly add the IP address of the station that will be
+doing the queries, so be sure you get it in there.
+
+For each router, add a line like this to your config file:
+
+ROUTER <network> <router ip> <SNMP community> <"description">
+
+For a network 192.168.3.0/24 with a router 192.168.3.1 and a read-only
+community string of hackme in a high school, you might use this:
+
+ROUTER 192.168.3.0/24 192.168.3.1 hackme "Randomville High School"
+
+Repeat as necessary to list everything you can.
+
+Now you need to do the same thing, but only for the switches.  Again you
+need the same information, and this time you should get a little more 
+specific with the location information.
+
+SWITCH <network> <switch ip> <SNMP community> <"description">
+
+SWITCH 192.168.3.0/24 192.168.3.10 hackme "RHS main data closet"
+SWITCH 192.168.3.0/24 192.168.3.11 hackme "RHS computer lab"
+SWITCH 192.168.3.0/24 192.168.3.12 hackme "RHS office"
+
+With the ROUTER and SWITCH directives set, you can take it for a test
+flight.  It won't be much to look at, but it will let you know if
+everything is working.  Feed it an IP address in a configured network,
+and you should see something like this:
+
+	    Query: 192.168.3.30
+	 Hostname: rhs-linux.example.edu (DNS)
+
+	   Router: Randomville High School - 192.168.3.1
+	      MAC: 0:90:27:c2:2c:e5 (INTEL CORPORATION)
+
+	   Switch: RHS main data closet (RHS-Main) - 192.168.3.10
+	     Port: 33 (RMON:10/100 Port 1 on Unit 2)
+
+	   Switch: RHS computer lab (RHS-Lab) - 192.168.3.11
+	     Port: 24 (24)
+
+	   Switch: RHS office (RHS-Office) - 192.168.3.12
+	     Port: 24 (24)
+
+Notice that it finds the system *everywhere* since we don't have any link 
+data installed yet.  That's the next thing to fix.
+
+Once you know this much works, start documenting your switch to switch
+connections.  Basically, if port A on switch X connects to port B on
+switch Y, you need entries like this:
+
+LINKINFO X A "Link to switch Y"
+LINKINFO Y B "Link to switch A"
+
+This is used to keep ports which aggregate many other ports out of the
+normal display.  Otherwise, you'd get a response from every switch on the
+network everytime you sdig something.  It gets hard to filter out the
+noise by hand, so this does it for you.  Use -v to turn it back on.
+
+For our example high school network, we'll use these links:
+
+LINKINFO 192.168.3.10 23 "Link to computer lab switch"
+LINKINFO 192.168.3.10 24 "Link to office switch"
+LINKINFO 192.168.3.11 24 "Link to main switch"
+LINKINFO 192.168.3.12 24 "Link to main switch"
+
+Run it again, and it should get a lot cleaner:
+
+	    Query: 192.168.3.30
+	 Hostname: rhs-linux.example.edu (DNS)
+
+	   Router: Randomville High School - 192.168.3.1
+	      MAC: 0:90:27:c2:2c:e5 (INTEL CORPORATION)
+
+	   Switch: RHS main data closet (RHS-Main) - 192.168.3.10
+	     Port: 33 (RMON:10/100 Port 1 on Unit 2)
+
+Much better.  Obviously the other two switches "see" this system on their
+uplink ports, since it's plugged into the switch back there.  By
+suppressing those ports in the findings, it's easy to see which switch
+really has the system.
+
+OK, so now let's say that RHS-LINUX really isn't in the data closet, and
+we need to document the fact that it's merely plugged into a patch panel
+port *in* that closet.  That's where the PORTDESC comes in.
+
+PORTDESC 192.168.3.10 33 "Patch panel #314 - to RHS-LINUX"
+
+In this case, it's on a 3com SuperStack switch which has 32 units per   
+virtual switch.  There are two physical switches here, and it's plugged 
+into the one with the "2" unit light illuminated.
+
+OK, so now that we have that plugged in, let's run it one more time.
+
+	    Query: 192.168.3.30
+	 Hostname: rhs-linux.example.edu (DNS)
+
+	   Router: Randomville High School - 192.168.3.1
+	      MAC: 0:90:27:c2:2c:e5 (INTEL CORPORATION)
+
+	   Switch: RHS main data closet (RHS-Main) - 192.168.3.10
+	     Port: 33 (RMON:10/100 Port 1 on Unit 2)
+	     Info: Patch panel #314 - to RHS-LINUX
+
+That's about all you need to know to start tracking things with this
+software. 
+
+Query forms
+===========
+
+You can run queries by IP addresses, DNS host names, or WINS host names.
+DNS trumps WINS, so if you have conflicting namespaces, fix it.
+
+Direct MAC queries
+==================
+
+If you know the MAC address of a host, you can run a query on it if you
+have some idea of which network will host it.  From our above example,
+looking for "0:90:27:c2:2c:e5" yields something like this:
+
+	$ sdig -m 0:90:27:c2:2c:e5 192.168.3.1
+
+	Searching for 0:90:27:c2:2c:e5 in network 192.168.3.1
+
+	   Router: Randomville High School - 192.168.3.1
+	      MAC: 0:90:27:c2:2c:e5 (INTEL CORPORATION)
+
+	   Switch: RHS main data closet (RHS-Main) - 192.168.3.10
+	     Port: 33 (RMON:10/100 Port 1 on Unit 2)
+
+Here, the "query" is actually a helper to tell sdig where to look.  You
+can provide a hostname of a neighboring system, since that will resolve
+to an IP address which will be used for router discovery.

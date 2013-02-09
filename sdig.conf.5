@@ -1,0 +1,104 @@
+.TH SDIG.CONF 5 "Mon Mar 24 2003" "" "Switch Digger"
+.SH NAME
+sdig.conf \- Configuration for the Switch Digger
+
+.SH DESCRIPTION
+\fBsdig\fR(8) uses this file to learn about your network's configuration.  
+It is essential to proper operation.
+
+.SH SECURITY WARNING
+
+This file will obviously contain a great deal of information about your 
+organization's network, including SNMP community strings.  For that 
+reason, you should use appropriate permissions so that only authorized 
+users may access it.
+
+I recommend creating a new group, then make the file readable by that
+group, and place specific users into that group.
+
+This file should not be world-readable.
+
+.SH DIRECTIVES
+
+.IP "ROUTER \fInetwork\fR \fIaddr\fR \fIcommunity\fR \fIdescription\fR"
+
+List a router for the network \fInetwork\fR (CIDR or a.b.c.d/x.x.x.x
+format) at IP address \fIaddr\fR using SNMP community \fIcommunity\fR.
+The \fIdescription\fR provides some details when generating the output.
+Remember to wrap the description in "quotes" if it contains any sort
+of whitespace (spaces, tabs, etc).
+
+	ROUTER 192.168.3.0/24 192.168.3.1 mycommunity "Company core router"
+
+.IP "SWITCH \fInetwork\fR \fIaddr\fR \fIcommunity\fR \fIdescription\fR"
+
+Like ROUTER, but for a switch instead.
+
+	SWITCH 192.168.3.0/24 192.168.3.2 mycommunity "Upstairs data room"
+
+	SWITCH 192.168.3.0/24 192.168.3.3 mycommunity "Downstairs data room"
+
+.IP "LINKINFO \fIaddr\fR \fIport num\fR \fIdescription\fR"
+
+Describe a connection between switches so it won't show up on the
+normal sdig display.  This limits your findings in normal mode to 
+port(s) that probably lead to the target host.  Use verbose mode to
+display all of them, even the ones that just go to other switches.
+
+	LINKINFO 192.168.3.2 24 "link to downstairs switch"
+
+	LINKINFO 192.168.3.3 24 "link to upstairs switch"
+
+.IP "PORTDESC \fIaddr\fR \fIport num\fR \fIdescription\fR"
+
+Describe a port in a switch.  Usually used for details like patch panel
+numbers and other things that can't be inferred by asking the equipment
+directly.
+
+	PORTDESC 192.168.3.2 1 "Upstairs patch panel #10"
+
+	PORTDESC 192.168.3.3 25 "Fiber to remote site"
+
+.IP "WINS \fIaddr\fR"
+
+Tell nmblookup to use the WINS server at \fIaddr\fR for name
+lookups.  Only used when NMBLOOKUP is defined and DNS lookups fail.
+
+	WINS 192.168.100.1
+
+.IP "NMBLOOKUP \fIpath\fR"
+
+Specify the path to Samba's nmblookup binary.  This might be
+/usr/local/samba/bin/nmblookup if you do a stock install from source.
+This program is optional, and is provided to augment DNS lookups in
+environments laden with Windows machines.
+
+	NMBLOOKUP /usr/local/samba/bin/nmblookup
+
+.IP "MACTABLE \fIpath\fR"
+
+Specify the location of the MAC table file.  This is another item that is
+used to provide a few more bits of information when tracking down a
+system.  You might use it to find rogue NICs that are not the
+company-approved brand.
+
+This file is rather large and rarely changes, so it's not included in the
+source distribution.  You can get it on the main sdig web site -
+http://www.exploits.org/sdig/
+
+	MACTABLE /etc/mactable
+
+.IP "HOSTINFO \fIpath\fR"
+ 
+Give the location of a script or program that will be called shortly
+after displaying the Query: data.  It will receive the IP address of
+the target host as an argument.
+
+If you want to display things like the system's NetBIOS name, this is   
+a good place to put a call to Samba's nmblookup.
+
+.SH SEE ALSO
+\fBsdig\fR(8)
+
+.SH AUTHOR
+Russell Kroll <rkroll@exploits.org>

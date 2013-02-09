@@ -1,0 +1,28 @@
+Diagnosing weirdness
+--------------------
+
+If you get a lot of messages like "no router found for <host>", then
+<host> probably hasn't been addressed by the router(s) you have 
+configured for that network.  Imagine a situation like this:
+
+ +----------+   +--------+  +----------+     +------------+
+ | Router 1 |   | Target |  | Router 2 +-----+ (Internet) |
+ +----------+   +--------+  +----------+     +------------+
+      |              |            |
+------+--------------+------------+----
+
+In this case, imagine a host that only talks to the Internet (via router 
+2) and never the internal network (behind router 1).  If you only have 
+router 1 in your sdig.conf, you will never be able to track this target.
+
+The solution is to add router 2 as another entry, since it will have an 
+ARP entry for the host.
+
+Obviously, this only happens when the sdig host is also not behind router 
+1, as sdig will send out some pings to kickstart ARP when nothing happens 
+at first.
+
+This can also happen if you try to dig switch IP addresses.  Switches 
+generally don't have a lot to say, especially to each other.  If you need 
+to make this work, you may have to log into each switch and have them ping 
+the target switch so they know where it is first.

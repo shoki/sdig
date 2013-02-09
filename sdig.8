@@ -1,0 +1,73 @@
+.TH SDIG 8 "Mon Apr  4 2003" "" "Switch Digger"
+.SH NAME
+sdig \- The Switch Digger
+.SH SYNOPSIS
+.B sdig [-d] [-v] [-F] [-f \fIconfig\fB] [-m \fIMAC\fB] ( \fIIP\fB | \fIhostname\fB )
+
+.SH DESCRIPTION
+
+The Switch Digger, or sdig, is a tool that is intended to help network
+administrators track down systems.  It was designed in a public school
+district environment with about 1500 systems spread across 25 remote
+locations.
+
+sdig works by first finding the IP address of the target system, then it
+contacts the router(s) in that network to get the MAC address for that IP
+address.  With that known, it then probes every switch on the target
+network to find a port number.  The port that doesn't lead to another
+switch is returned, along with any description you may have provided.
+
+.SH OPTIONS
+
+.IP -d
+Raise the debugging level.  This gets rather messy above 3 or 4.
+
+.IP -v
+Be verbose.  This makes sdig print every port instead of just the one that
+is the most likely candidate, for example.
+
+.IP "-F"
+Fast mode.  sdig will not do reverse DNS (in-addr.arpa) or NetBIOS queries
+to port 137 when this is enabled.
+
+.IP "-f \fIconfig\fR"
+Use the configuration file \fIconfig\fR.
+
+.IP "-m \fIMAC\fR"
+Look for this MAC address rather than asking a router about it.  You still
+must provide an IP address or hostname so that sdig knows which network
+to check.  A total-network sweep option is planned for the future.
+
+.IP IP
+An Internet Protocol address to find, i.e. 192.168.1.1.
+
+.IP hostname
+A DNS or WINS hostname to find.  WINS resolution is only available if you
+have installed nmblookup from Samba and have added it to your config file.
+
+.SH LIMITATIONS
+You can't track down arbitrary hosts on the Internet.  Well, most people
+can't.  You might be able to do this if you convince all the router and
+switch manufacturers of the world to drop in a SNMP backdoor for your
+sdig host.  US government three letter entities: contact me for details.
+
+.SH BUGS
+This program was developed on just one kind of system (Linux glibc2) 
+so it probably doesn't compile cleanly on others.
+
+.SH BACKGROUND
+I first wrote this program to show some local people that you don't need
+to dump lots of money into a program like 3com's Transcend just to hunt 
+down some lusers on your network.  If you don't need to create fancy 
+network diagrams to impress the PHBs, then this program will probably work
+for you.
+
+It was developed originally on 3com SuperStack 3300s, and continues
+to be tested both on those and various HP 2324s and 4108s.  Other
+equipment should also work if it provides the same basic OIDs.
+
+.SH SEE ALSO
+\fBsdig.conf\fR(5)
+
+.SH AUTHOR
+Russell Kroll <rkroll@exploits.org>

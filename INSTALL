@@ -1,0 +1,22 @@
+Switch Digger install docs
+==========================
+
+This program needs some helpers to be effective.  Go get them and build
+them first, then come back to this document to do sdig itself.
+
+1. Net-SNMP package (* required *)
+
+   Get it from http://net-snmp.sourceforge.net/
+
+   Note: The older CMU SNMP package may not work.
+
+2. Samba (optional)
+
+ - Get it from a mirror via http://www.samba.org/
+
+ - Build it and make a note of where 'nmblookup' is installed
+
+Now you can build sdig with the usual procedure.  Once it's done compiling,
+install it with 'make install' and edit the config file to suit your
+system.  The important ones are ROUTER and SWITCH.  You can add further
+details later.

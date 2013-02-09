@@ -1,0 +1,32 @@
+TODO list
+=========
+
+Things that need to happen sooner or later...
+
+ - Other portability changes
+
+   If sdig doesn't work properly on your favorite OS, it's probably 
+   because I don't run it here.  Mail me and we'll make it work.
+   If I can make UPS software run everywhere, then something as simple
+   as this shouldn't be that hard.
+
+
+ - Use remaining system.* information to enhance the output:
+
+   system.sysDescr.0
+   system.sysLocation.0
+   system.sysContact.0
+
+Then there are the blue sky items, such as:
+
+ - perhaps some kind of database plugin functionality
+
+ - -m <MAC> should have a way to go through all of the routers in 
+   the config file if you really have no idea where a host is
+
+ - Come up with some way to parallelize the switch query stage -
+   some of my locations have up to 10 switches and it can take awhile
+   to find the right one
+
+ - While doing MAC-based searches, it should also hit the routers and
+   try to reverse it back to IP address(es) for extra tracking help
